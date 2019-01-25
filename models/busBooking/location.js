@@ -10,4 +10,4 @@ const locationSchema = new Schema({
 })
 locationSchema.index({locationCoords:'2dsphere'});
 const Location = mongoose.model('location',locationSchema);
-module.exports={Location};
+module.exports={Location}

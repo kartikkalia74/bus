@@ -1,10 +1,14 @@
 const express = require("express");
 const Route = express.Router();
-const {Bus} = require('../models/bus');
+const {Bus} = require('../models/busBooking/bus');
 Route.post('/',(req,res)=>{
     const {source ,destination} = req.body;
-    Bus.findbus(source,destination,function(Ress){
+    Bus.findbus(destination,source,function(Ress){
         console.log(Ress,"ress")
+        if(Ress){
+            res.send({status:true,data:Ress})
+        }
+        
     })
    /*  Bus.find({route:{$all:[source,destination] }}).then((avalibleList)=>{
         console.log(avalibleList)

@@ -1,6 +1,6 @@
 const express = require("express");
 const Route = express.Router();
-const {Location} = require('../models/location');
+const {Location} = require('../models/busBooking/location');
 
 
 Route.post('',(req,res)=>{
@@ -10,7 +10,7 @@ const {location,locationCoords} = req.body;
     const newLocation = new Location({})
     newLocation.location=location;
     console.log(newLocation,"check1")
-    newLocation.locationCoords.coordinates.push(locationCoords[0],locationCoords[1]);
+    newLocation.location.coordinates.push(locationCoords[0],locationCoords[1]);
     console.log(newLocation,"check2")
     newLocation.save().then((result)=>{console.log(result); return res.send(result)})
     .catch(err=>console.log(err))
