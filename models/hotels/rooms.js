@@ -34,7 +34,13 @@ const RoomSchema = new Schema({
         default:null
     } 
 })
-
+//inserting no. of rooms(insert many) with room type
+/* 
+//required fields
+hotelId
+roomCapacity type ["single" , double,triple]
+noOfRooms  
+*/
 RoomSchema.statics.createRooms = function(hotelId,roomCapacity,noOfRooms,cb){
     const availableRoomType = ["singleRooms","doubleRooms","tripleRooms","fourPeopleRoom"];
     const roomType = availableRoomType[roomCapacity-1];
@@ -45,7 +51,6 @@ RoomSchema.statics.createRooms = function(hotelId,roomCapacity,noOfRooms,cb){
                 if(err) throw err;
             
                 let roomIds=roomList.map((room)=>room._id);
-          
 
          mongoose.model("hotel").updateOne({
              _id:hotelId

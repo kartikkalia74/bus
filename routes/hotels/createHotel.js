@@ -2,29 +2,27 @@ const express = require("express");
 const Route= express.Router();
 const {Hotel} = require("../../models/hotels/hotel");
 const {Rooms}= require("../../models/hotels/rooms");
-const {Book} = require("../../models/hotels/booking")
-
+const {Book} = require("../../models/hotels/booking");
+const {Zones} = require("../../models/ZONES/zone");
 
 
 
 
 Route.post("/search",(req,res)=>{
-    const [point1,point2,point3,point4,point5] = req.body.location;
+    const {searchName} = req.body;
+    console.log(searchName)
+    Zones.find({zoneName:searchName},function(err,zone){
+        if(err) throw err;
+        if(zone.length>0){
+            res.send({status:true,data:zone})
+        }else{
+            Hotel.find({name:searchName},function(err,hotelList){
+                if(err) throw err;
+                res.send(hotelList)
+            })
+        }
+    })
 
-    console.log(point1,point2,point3,point4,point5,"5")
-     /* Hotel.find({location:{
-                        $geoWithin:{
-                            $geometry:{
-                                type:"Polygon",coordinates:[[point1,point2,point3,point4,point5]]
-                            }
-                        }//
-                        }
-                    }
-                ).then((list)=>{console.log(list,"list"); return res.send({status:true,data:list})})
-                .catch(err=>console.log(err))  */
-               Hotel.search(point1,point2,point3,point4,point5,function(places){
-                   res.send(places);
-               }) 
 });
 
 Route.post("/bookRoom",(req,res)=>{
