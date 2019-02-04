@@ -21,6 +21,15 @@ hotelList:[
     }
 ]
 });
+zoneSchema.statics.findSearch = function(searchName){
+    this.aggregate([
+        {
+            $match:{ 
+                
+            }
+        }
+    ])
+} 
 
 zoneSchema.statics.createZone= function(zoneName,point1,point2,point3,point4,point5,cb){
     this.create({zoneName,"location.coordinates":[[point1,point2,point3,point4,point5]]},function(err,data){

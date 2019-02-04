@@ -3,6 +3,7 @@ const Route = express.Router();
 const {Hotel} = require('../../models/hotels/hotel');
 const {Rooms} = require('../../models/hotels/rooms');
 const {Zones} = require('../../models/ZONES/zone');
+const {Books}  = require('../../models/hotels/booking');
 
 
 // creating hotel and adding it to location zone
@@ -36,7 +37,8 @@ Route.post('/room',(req,res)=>{
     const {roomCapacity,hotelId,noOfRooms} = req.body;
     console.log(req.body)
     Rooms.createRooms(hotelId,roomCapacity,noOfRooms,function(savedrooms){
-        res.send({status:true,data:savedrooms})
+        res.send({status:true,data:savedrooms});
+
     })
 });
 
@@ -61,11 +63,13 @@ location:[point1,point2,point3,point4,point5]
         res.send({status:true,data:insertedZone})
     });
  })
+Route.post('/checkOut',(req,res)=>{
+        const {bookingId} = req.body;
+    Books.checkOut(bookingId,checkOutTime)
+    
+    
 
- Route.post("/hotelInZone",(req,res)=>{
-     const {zoneId } = req.body;
-
- })
+})
 
 
 

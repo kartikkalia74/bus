@@ -34,7 +34,11 @@ address:{
 },
 
 booking:[{
-    type:mongoose.Schema.Types.ObjectId ,
+   id:{type:mongoose.Schema.Types.ObjectId },
+   roomType:{type:String},
+   bookingId:{type:mongoose.Schema.Types.ObjectId},
+   chekIn:{type:Date},
+   checkOut:{type:Date}
 }],
 
 amenities:{
@@ -65,38 +69,21 @@ price:{
     }
 },
 
-rooms:{
-
-    singleRooms:[{
-
-        type:mongoose.Schema.Types.ObjectId ,
-        ref:'room'
-    }],
+    singleRooms:[
+        
+    ],
     
-    doubleRooms:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'room'
-    }],
+    doubleRooms:[],
     
-    tripleRooms:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'room'
-    }],
-    fourPeopleRoom:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'room'
-    }],
+    tripleRooms:[],
+    fourPeopleRoom:[],
     availableRooms:[{
         type:mongoose.Schema.Types.ObjectId ,
         ref:'room'
     }],
     
-    bookedRooms:[{
-        type:mongoose.Schema.Types.ObjectId,
-         ref:'room' 
-         ,default:null
-        }]
-},
+    bookedRooms:[]
+,
 
 });
 
@@ -136,6 +123,7 @@ hotelSchema.statics.updatePrice= function(hotelId,price,roomType,cb){
     return this.updateOne({_id:hotelId},{$set:{[`price.${priceField}`]:price}},function(err,raw){
         if(err) throw err;
         console.log(raw,'raw')
+
         cb(raw)
     })
 }

@@ -2,37 +2,58 @@ const express = require("express");
 const Route= express.Router();
 const {Hotel} = require("../../models/hotels/hotel");
 const {Rooms}= require("../../models/hotels/rooms");
-const {Book} = require("../../models/hotels/booking");
+const {Books} = require("../../models/hotels/booking");
 const {Zones} = require("../../models/ZONES/zone");
 
 
 
 
+//if searching zone 
+//to display: zone with hotelNames
+//else matching hotelnames
 Route.post("/search",(req,res)=>{
-    const {searchName} = req.body;
-    console.log(searchName)
-    Zones.find({zoneName:searchName},function(err,zone){
-        if(err) throw err;
-        if(zone.length>0){
-            res.send({status:true,data:zone})
-        }else{
-            Hotel.find({name:searchName},function(err,hotelList){
-                if(err) throw err;
-                res.send(hotelList)
-            })
-        }
-    })
+    const {searchName,checkIn ,checkOut,roomType,noOfPerson } = req.body;
+    console.log(searchName);            
+    Zones.aggregate([
+        {
+        $match:{
+                zoneName:searchName
+                
+            }
+           
+        },
+     {
+    $lookup:{
+        from:'hotels',
+        localField:'hotelList',
+        foreignField:'_id',
+        as:"searchList"
+    }
+} 
+],function(err,data){
+    if(err) throw err;
+    console.log(data)
+    res.send(data)
+}) 
 
 });
+
+Route.post('/search/:hotelId',function(req,res){
+
+})
 
 Route.post("/bookRoom",(req,res)=>{
     const {name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId} = req.body;
     console.log(req.body)
-    Book.bookRoom(name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId,function(bookingList){
-        res.send({status:true,data:bookingList})
+     Books.bookRoom(name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId,function(bookingList){
+        res.send({
+            status:true,
+            data:bookingList
+        });
     })
-     
-})
+      
+});
+
 
 
 
@@ -76,3 +97,17 @@ point2:khuda lhora :[76.76902,30.77238],
 point3:manimajra:[ 76.83013,30.71779],
 point4:isser mohali library:[76.73108,30.66569]
 */
+
+
+/* {
+	"name":"mnfkj",
+	"username":"kdjkj@jsdkj",
+	"phone":"9593998993",
+	"roomType":"1",
+	"checkIn":"",
+	"checkOut":"",
+	"noOfRooms":1,
+	"noOfPersons":"1",
+	"hotelId":"5c4ed8898040413f2392558d"
+}
+'http://localhost:5000/hotel/bookRoom' */

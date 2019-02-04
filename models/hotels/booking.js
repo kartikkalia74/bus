@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
 const BookSchema = new Schema ({
     name:{
         type:String
     },
 
-    mobile:{
+    phone:{
         type:Number
     },
 
-    email:{
+    username:{
         type:String
     },
 
@@ -22,14 +23,20 @@ const BookSchema = new Schema ({
         type:Date
     },
 
-    noOfRooms:{
-        type:Number
-    },
+    Rooms:[{
+        type:mongoose.Schema.Types.ObjectId
+    }],
 
     noOfPersons:{
         type:Number
     },
-    roomType:{type:Number, enum:[1,2,3,4]}
+    roomType:{
+        type:String, 
+        enum:["singleRooms","doubleRooms","tripleRooms","fourPeopleRooms"]
+    },
+    hotelId:{
+        type:mongoose.Schema.Types.ObjectId
+    }
 })
 
 BookSchema.statics.isbooked =function(FromDate,toDate,roomType){
@@ -41,7 +48,9 @@ return this.aggregate([{
         {
             $and:[{
                 checkIn:{
-                    $gt:{"$date":FromDate}
+                    $gt:{
+                        "$date":FromDate
+                    }
                 }
             },
             {
@@ -55,49 +64,83 @@ return this.aggregate([{
 }
 
 BookSchema.statics.bookRoom = function(name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId,cb){
-    const  hotels= this;
-        console.log(`"${hotelId}"`)
-        mongoose.model('hotel').aggregate([{
-            $match:{_id:mongoose.Types.ObjectId(hotelId)}
-        },
-        {
-            $lookup:{
-                from:"books",
-                localField:"booking",
-                foreignField:"_id",
-                as:"bookingLists"
+    
+    const PossibleroomType =["singleRooms","doubleRooms","tripleRooms","fourPeopleRooms"]
+            roomType = PossibleroomType[roomType-1];
+         // for getting roomsIs for booking
+        mongoose.model('hotel').aggregate([
+            {
+                $match:{
+                    _id:mongoose.Types.ObjectId(hotelId)
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    [roomType]:{
+                        $filter:{
+                            input:`$${roomType}`,
+                            as:"room",
+                             cond:{$eq:["$$room.isBooked",false]}
+                        }
+                    }   
+                }
             }
-        },
-        {
-            $project:{
-                bookingLists:1,
-                name:1,
-                "price.singleRoom":1
-            }
-        },{$match:{checkIn:{$gte:new Date("2008-09-15T15:53:00")}}}],function(err,result){
-            if(err)console.log(err)
-            console.log(result)
-            cb(result)
+            ],function(err,data){
+            if(err) throw err;
+                console.log(data[0].singleRooms)
+                if(data[0].singleRooms.length>=noOfPersons){
+                    let roomsIds = data[0].singleRooms.map(room=>room.roomId).slice(0,noOfRooms)
+                      mongoose.model('Book').create({name,username,phone,checkIn,checkOut,noOfPersons,Rooms:roomsIds,hotelId,roomType},function(err,savedBooking){
+                          if(err) throw err;
+                          
+                        let   bookingObj =  {rooms:roomsIds,roomType,checkIn:Date(checkIn),checkOut:Date(checkOut)}
+                                let Bulk = mongoose.model('hotel').collection.initializeOrderedBulkOp() ;
+                                
+                                mongoose.model('hotel').updateOne({_id:mongoose.Types.ObjectId(hotelId) },{$set:{[`${roomType}.$[room].isBooked`]:true}},{arrayFilters:[{["room._id"]:{$in:[roomsIds]}}],multi:true},function(err,raw){
+                                    if(err) throw err;
+                                    console.log(raw)
+                                })
+                         /*  mongoose.model('hotel').updateOne({_id:hotelId},{$addToSet:{bookedRooms:bookingObj }},function(err,raw){
+                              if(err) throw err;
+                              console.log(raw)
+
+                          }) */
+                         
+                      });
+                        
+                   /*  mongoose.model('hotel').updateOne({_id:mongoose.Types.ObjectId(hotelId)},{$addToSet:{}}) */
+                }else{
+
+                }
+            
         })
 
-
-
-
-  /*   this.create({
-         name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons
-     },
-     function(err,save){
-         if(err) throw err;
-         console.log(save)
-         console.log("this");
-         mongoose.model('hotel').updateOne({_id:hotelId},{$addToSet:{booking:save._id}},function(err,raw){
-             if(err) throw err;
-             console.log(raw)
-         })
-     }) */
-     
+         /*  mongoose.model('hotel').aggregate([
+              {
+                  $match:{
+                      _id:mongoose.Types.ObjectId(hotelId)
+                    }
+                },
+                {$project:{singleRooms:1}}
+            
+            ],function(err,result){
+              if(err) throw err;
+              console.log(result)
+          }) */
  }
 
-const Book = mongoose.model('Book',BookSchema);
+const Books = mongoose.model('Book',BookSchema);
+module.exports={Books};
 
-module.exports={Book}
+/* 
+
+{   
+    bookingId:''
+    roomsIds:[]
+    checkIn:,
+    checkOut:,
+    noOfPersons:,
+
+}
+*/

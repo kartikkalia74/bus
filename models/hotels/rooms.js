@@ -17,7 +17,7 @@ const RoomSchema = new Schema({
          max:4
     },
 
-    personResiding:{
+    noOfPersons:{
         type:Number,
         default:1,
         max:4,
@@ -49,18 +49,19 @@ RoomSchema.statics.createRooms = function(hotelId,roomCapacity,noOfRooms,cb){
              roomhelphers.createArrOfRange(roomCapacity,noOfRooms),
              function(err,roomList){
                 if(err) throw err;
-            
-                let roomIds=roomList.map((room)=>room._id);
+                let roomIds=roomList.map((room)=> {
+                    return {
+                        roomId:room._id,
+                        isBooked:false
+                    }
+                });
 
          mongoose.model("hotel").updateOne({
              _id:hotelId
             },
             {
                 $addToSet:{
-                    [`rooms.${roomType}`]:{
-                        $each:roomIds
-                    },
-                    availableRooms:{
+                    [`${roomType}`]:{
                         $each:roomIds
                     }
                 } 
