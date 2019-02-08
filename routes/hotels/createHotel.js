@@ -4,7 +4,7 @@ const {Hotel} = require("../../models/hotels/hotel");
 const {Rooms}= require("../../models/hotels/rooms");
 const {Books} = require("../../models/hotels/booking");
 const {Zones} = require("../../models/ZONES/zone");
-
+const  {Save}= require("../../models/save")
 
 
 
@@ -33,31 +33,49 @@ Route.post("/search",(req,res)=>{
 ],function(err,data){
     if(err) throw err;
     console.log(data)
-    res.send(data)
+    
+    if(data.length<=0){
+        Hotel.find({name:'taj hotel chandigarh'},function(err,searchHotelList){
+            if(err) throw err;
+            console.log(searchHotelList,'searchHotelList')
+        })
+    }else{
+        res.send(data)
+    }
 }) 
 
 });
 
-Route.post('/search/:hotelId',function(req,res){
-
-})
 
 Route.post("/bookRoom",(req,res)=>{
     const {name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId} = req.body;
     console.log(req.body)
-     Books.bookRoom(name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId,function(bookingList){
+          Books.bookRoom(name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId,function(bookingList){
         res.send({
             status:true,
             data:bookingList
-        });
-    })
-      
+        }); 
+    }) 
 });
 
 
 
-
-
+/* {
+   "_id" : 1,
+   "grades" : [
+      { "grade" : 80, "mean" : 75, "std" : 6 },
+      { "grade" : 85, "mean" : 100, "std" : 4 },
+      { "grade" : 85, "mean" : 100, "std" : 6 }
+   ]
+}
+{
+   "_id" : 2,
+   "grades" : [
+      { "grade" : 90, "mean" : 100, "std" : 6 },
+      { "grade" : 87, "mean" : 100, "std" : 3 },
+      { "grade" : 85, "mean" : 100, "std" : 4 }
+   ]
+} */
 
 module.exports=Route;
 

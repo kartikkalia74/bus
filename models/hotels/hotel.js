@@ -70,6 +70,9 @@ price:{
 },
 
     singleRooms:[
+        {
+              type:mongoose.Schema.Types.ObjectId
+        }
         
     ],
     
@@ -88,34 +91,7 @@ price:{
 });
 
 
-hotelSchema.virtual('singleRoomLength')
-.get(function(){
-    return this.singleRooms.length;
 
-});
-
-hotelSchema.virtual('totalRooms')
-.get(function(){
-    console.log('vitua;')
-    return this.availableRooms.length+this.bookedRooms.length
-});
-
-hotelSchema.virtual('doubleRoomLength')
-.get(function(){
-    if(this.doubleRooms.length){
-        return this.doubleRooms.length;
-    }
-    
-});
-
-hotelSchema.virtual('tripleRoomLength')
-.get(function(){
-    return this.tripleRooms.length;
-});
-
-hotelSchema.virtual('fourPeopleRoomLength').get(function(){
-    return this.fourPeopleRoom.length;
-});
 
 hotelSchema.statics.updatePrice= function(hotelId,price,roomType,cb){
         const availRoomType= ["singleRoom","doubleRoom","tripleRoom","fourPeopleRoom"];
@@ -164,7 +140,33 @@ hotelSchema.statics.search = function(point1,point2,point3,point4,point5,cb){
     }) 
 }
 
+hotelSchema.statics.hotelList = function  (cb){
+    this.find({},"name",function(err,hotelList){
+        if(err) throw err;
+        cb(hotelList)
+    })
+}
 
+/* hotelSchema.statics.count=function(){
+   return this.count()
+} */
+hotelSchema.statics.index = function(cb){
+    let callbackObj = {};
+this.count(function(err,hotelCount){
+    if(err) throw err;
+    callbackObj.hotelCount=hotelCount;
+  mongoose.model('zone').countDocuments(function(err,zoneCount){
+      if(err) throw err;
+      callbackObj.zoneCount=zoneCount;
+   mongoose.model('Book').countDocuments(function(err,bookingCount){
+       if(err) throw err;
+       callbackObj.bookingCount = bookingCount;
+       cb(callbackObj)
+   })   
+      
+  })  
+})
+}
 
 hotelSchema.index({location:"2dsphere"})
 

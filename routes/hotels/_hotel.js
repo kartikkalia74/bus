@@ -1,14 +1,18 @@
+//dependencies
 const express = require("express");
 const Route = express.Router();
+
+
+
+//models import
 const {Hotel} = require('../../models/hotels/hotel');
 const {Rooms} = require('../../models/hotels/rooms');
 const {Zones} = require('../../models/ZONES/zone');
 const {Books}  = require('../../models/hotels/booking');
-
+const {Coupons} = require('../../models/hotels/coupon');
 
 // creating hotel and adding it to location zone
 Route.post('/create',(req,res)=>{
-    console.log("inn")
     const {name,location,type,address,zoneId} = req.body;
     Hotel.create({name,type,address,"location.coordinates":location},function(err,insertedHotel){
         if(err) throw err;        
@@ -42,6 +46,14 @@ Route.post('/room',(req,res)=>{
     })
 });
 
+Route.post('/checkOut',(req,res)=>{
+    const {checkOutId} = req.body;
+    Books.checkOut(checkOutId,function(status){
+        console.log(status)
+    })
+
+})
+
 //updating price of specific type
 Route.post('/updatePrice',(req,res)=>{
     const {hotelId,price,roomType} = req.body;
@@ -63,22 +75,69 @@ location:[point1,point2,point3,point4,point5]
         res.send({status:true,data:insertedZone})
     });
  })
+
 Route.post('/checkOut',(req,res)=>{
         const {bookingId} = req.body;
     Books.checkOut(bookingId,checkOutTime)
-    
-    
+})
 
+Route.get("/hotelList",(req,res)=>{
+    Hotel.hotelList(function(list){
+        res.send(list)
+    })
+    
+})
+
+Route.get("/hotelCount",(req,res)=>{
+    Hotel.countDocuments(function(err,count){
+        if(err) throw err;
+        res.send({status:true,data:count})
+    })
+})
+
+Route.post('/coupon',(req,res)=>{
+    const {code,description,discount,discountType,validFrom,validUntil,timeOfUsage,minValue,maxValue,minItems,maxItems} = req.body;
+    console.log(req.body)
+    Coupons.create({code,description,discount,discountType,validFrom,validUntil,timeOfUsage,minValue,maxValue},function(err,data){
+        if(err) throw err;
+        console.log(data)
+    })
+})
+
+Route.get('/coupon',(req,res)=>{
+    Coupons.find({},function(err,CouponsList){
+        if(err) throw err;
+        console.log(CouponsList)
+    })
+})
+
+Route.get("/booking",(req,res)=>{
+    Books.find({},{name:1,username:1,phone:1},function(err,bookingList){
+        if(err) throw err;
+        res.send({status:true,data:bookingList})
+    });
+});
+Route.post('/dashboard',(req,res)=>{
+  console.log(req.body,'gh')
 })
 
 
 
 
 
+/* 
+ code
+    description
+    discount
+    discountType
+    validFrom
+     validUntil
+    timeOfUsage 
+    minValue
+    maxValue
+    isEnabled
 
-
-
-
+*/
 
 
 

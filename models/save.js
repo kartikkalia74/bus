@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const saveSchema = new Schema({
     _id:{type:Number},
-    status:{type:String },
-    changeLog:[{Type:String}],
-    comments:[{by:String,body:String,rating:Number}]
+    grades:[
+        {
+            grade:{type:Number},mean:{type:Number},std:{type:Number}
+    }]
 })
 
 
