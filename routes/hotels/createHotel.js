@@ -1,3 +1,6 @@
+      /*        client Api        */
+
+
 const express = require("express");
 const Route= express.Router();
 const {Hotel} = require("../../models/hotels/hotel");
@@ -8,42 +11,21 @@ const  {Save}= require("../../models/save")
 
 
 
-//if searching zone 
-//to display: zone with hotelNames
-//else matching hotelnames
-Route.post("/search",(req,res)=>{
-    const {searchName,checkIn ,checkOut,roomType,noOfPerson } = req.body;
-    console.log(searchName);            
-    Zones.aggregate([
-        {
-        $match:{
-                zoneName:searchName
-                
-            }
-           
-        },
-     {
-    $lookup:{
-        from:'hotels',
-        localField:'hotelList',
-        foreignField:'_id',
-        as:"searchList"
-    }
-} 
-],function(err,data){
-    if(err) throw err;
-    console.log(data)
-    
-    if(data.length<=0){
-        Hotel.find({name:'taj hotel chandigarh'},function(err,searchHotelList){
-            if(err) throw err;
-            console.log(searchHotelList,'searchHotelList')
-        })
-    }else{
-        res.send(data)
-    }
-}) 
 
+        /*searching for available hotel in zone with zone name    */
+                /* or */
+        /* searching for hotel with hotel name */
+
+                // required fields
+                /* search name 
+                    search type : [hotel or zone]
+                */ 
+Route.post("/search",(req,res)=>{
+    const {searchName,searchType,checkIn ,checkOut,roomType,noOfPerson } = req.body;
+    Hotel.findHotel(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(seachList){
+        console.log(seachList)
+        res.send(seachList)
+    })
 });
 
 

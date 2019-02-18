@@ -89,14 +89,15 @@ BookSchema.statics.bookRoom = function(name,username,phone,roomType,checkIn,chec
             },
             function(err,BookingData){
             if(err) throw err;
+                console.log(BookingData,'bookibng')
                 let bookedRoomIds = BookingData.map(book=>book.Rooms[0]).map(room=>room.roomId);
-                    if(BookingData.length<=0){
+                    if(BookingData.length===0){
                         mongoose.model('hotel').findById(mongoose.Types.ObjectId(hotelId),`${type}`,function(err,hotelRoomIds){
                             if(err) throw err;
                             console.log(hotelRoomIds,'before else')
                           let bookingRoomIds =  hotelRoomIds[type].slice(0,noOfRooms).map((room)=>{
                                 return {roomId:room ,roomType:type}
-                            })
+                            });
                             console.log(bookingRoomIds,'hj')
                             mongoose.model('Book').create({name,username,phone,checkIn,Rooms:bookingRoomIds,checkOut,hotelId,noOfPersons},function(err,bookingDetails){
                                 if(err) throw err;
@@ -158,6 +159,14 @@ BookSchema.statics.bookRoom = function(name,username,phone,roomType,checkIn,chec
 
         cb(status)
     })
+ }
+
+ BookSchema.statics.booking = function(hotelId,cb){
+     this.find({hotelId:mongoose.Types.ObjectId(hotelId)},function(err,data){
+         if(err) throw err;
+         console.log(data)
+         cb(data)
+     })
  }
 
 const Books = mongoose.model('Book',BookSchema);

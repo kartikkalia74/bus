@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <%include sidebar%>
+        <div class="container">
+            <%include header%>
+            <a href="updatePrice">upgratePrice</a>
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-12 col-md-9">
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-left-success shadow h-100 py-2">
+                                      <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                          <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">singleRooms</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data.price.singleRoom%></div>
+                                          </div>
+                                          <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <!-- double rooms -->
+
+                                  <div class="col-xl-3 col-md-6 mb-4">
+                                        <div class="card border-left-success shadow h-100 py-2">
+                                          <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                              <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">doubleRooms</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data.price.doubleRoom%></div>
+                                              </div>
+                                              <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>  
+
+                                    <!-- tripleRooms -->
+                                    
+                                  <div class="col-xl-3 col-md-6 mb-4">
+                                        <div class="card border-left-success shadow h-100 py-2">
+                                          <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                              <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Three people rooms</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data.price.tripleRoom%></div>
+                                              </div>
+                                              <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>  
+                                
+                                      <!-- four people Rooms -->
+
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                        <div class="card border-left-success shadow h-100 py-2">
+                                          <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                              <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">four people rooms</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><%=data.price.fourPeopleRoom%></div>
+                                              </div>
+                                              <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                    </div>
+                    </div>
+                </div>        
+            </div> 
+        </div>
+    
+</body>
+</html>

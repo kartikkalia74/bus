@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <% include sidebar%>
+        <div class="container">
+            <%include header%>
+            <div class="row">    
+                    <table style="border:2px">
+                            <tr  style="border:2px">
+                                <th>name</th>
+                                <th>username</th>
+                                <th>mobile</th>
+                                <th>checkIn</th>
+                                <th>checkOut</th>
+                                <th>Persons</th>
+                                <th>roomType</th>
+                                
+                            </tr>
+                            <%bookingList.forEach(function(booking){%>
+                                
+                                <tr> <td><%=booking.name%></td> 
+                                    <td><%=booking.username%></td>
+                                    <td><%=booking.phone%></td>
+                                    <td><%=booking.checkIn%></td>
+                                    <td><%=booking.checkOut%></td>
+                                    <td><%=booking.noOfPersons%></td>
+                                    <td><ol>
+                                            <%booking.Rooms.forEach(function(room){%>
+                                            <li><%=room.roomType%></li>
+                                            <%})%>
+                                    </ol> 
+                                   </td>
+                                    <td> <ol><%booking.Rooms.forEach(function(room){%>
+                                        <li><%=room.roomId%></li>
+                                        <%})%>
+                                    </ol>
+                                        
+                                   
+                                    </td>
+                                    <td><a href= <%= "checkOut/"+booking._id %> >checkOut</a></td>
+                                </tr> 
+                           <% }) %>
+                            
+                        </table>           
+        </div> </div>
+    </div>      
+</body>
+</html>

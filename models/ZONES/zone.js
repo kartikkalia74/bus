@@ -29,6 +29,7 @@ zoneSchema.statics.createZone= function(zoneName,point1,point2,point3,point4,poi
         console.log(data,"Res")
         cb(data)
         
+        
     })
 }
 

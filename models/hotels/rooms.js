@@ -32,7 +32,8 @@ const RoomSchema = new Schema({
     checkOut:{
         type:Boolean,
         default:null
-    } 
+    } ,
+    hotelId:{type:String}
 })
 //inserting no. of rooms(insert many) with room type
 /* 
