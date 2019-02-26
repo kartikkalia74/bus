@@ -10,9 +10,9 @@ const {Rooms} = require('../../models/hotels/rooms');
 const {Zones} = require('../../models/ZONES/zone');
 const {Books}  = require('../../models/hotels/booking');
 const {Coupons} = require('../../models/hotels/coupon');
-const helphers = require('../../helphers/validation')
+const helphers = require('../../helphers/validation');
+const {HotelAdmins} = require('../../models/hotels/hotelAdmin')
 
-   
 
 
    
@@ -27,8 +27,7 @@ Route.post("/zone",(req,res)=>{
 
 Route.get("/createZone",(req,res)=>{
     res.render('createZone')
-})
-Route.post('/createZone',(req,res)=>{
+}).post('/createZone',(req,res)=>{
    let {zoneName,coord1,coord2,coord3,coord4,coord5} =req.body
     console.log(req.body,'dfghj');
     Zones.createZone(zoneName,coord1,coord2,coord3,coord4,coord5,function(zoneList){
@@ -114,6 +113,8 @@ Route.get('/zone/:zoneName',(req,res)=>{
     console.log('fghj')
 })
 
+
+
 Route.get('/zone',(req,res)=>{
     Zones.find({},{zoneName:1},function(err,zoneList){
         if(err) throw err;
@@ -131,15 +132,6 @@ Route.get('/dashboard',(req,res)=>{
 
 })
 
-Route.post('/createHotel',(req,res)=>{
-    let {name,address,long,lat,singleRooms,doubleRooms,zoneName} = req.body;
-    console.log(req.body,'hjk')
-
-     Hotel.createHotel(name,address,long,lat,singleRooms,doubleRooms,zoneName,function(hotelList){
-        console.log(hotelList,'fghjkj')
-        res.render('hotelList',{hotelList})
-    }) 
-})
 
 Route.get('/createHotel',(req,res)=>{
     Zones.find({},{zoneName:1},function(err,zoneList){
@@ -148,6 +140,14 @@ Route.get('/createHotel',(req,res)=>{
         return res.render('createHotel',{zoneList})
     })
   
+}).post('/createHotel',(req,res)=>{
+    let {name,address,long,lat,singleRooms,doubleRooms,zoneName} = req.body;
+    console.log(req.body,'hjk')
+
+     Hotel.createHotel(name,address,long,lat,singleRooms,doubleRooms,zoneName,function(hotelList){
+        console.log(hotelList,'fghjkj')
+        res.render('hotelList',{hotelList})
+    }) 
 })
 
 Route.get('/hotelList',(req,res)=>{
@@ -158,6 +158,17 @@ Route.get('/hotelList',(req,res)=>{
     })
 })
 
+Route.get('/createAdmin',(req,res)=>{
+    res.render('createAdmin')
+})
+.post('/createAdmin',(req,res)=>{
+    const {username,password,hotelId} = req.body;
+    console.log(req.body,'hhhh')  
+    HotelAdmins.addAdmin(username,password,hotelId,function(adminData){
+        res.send(adminData)
+    })  
+
+})
 //updating price of specific type
 
 
@@ -172,12 +183,7 @@ Route.get('/hotelList',(req,res)=>{
     
 }) */
 
-Route.get("/hotelCount",(req,res)=>{
-    Hotel.countDocuments(function(err,count){
-        if(err) throw err;
-        res.send({status:true,data:count})
-    })
-})
+
 
 Route.post('/createCoupon',(req,res)=>{
     const {code,description,discount,discountType,validFrom,validUntil,timeOfUsage,minValue,maxValue,minItems,maxItems} = req.body;

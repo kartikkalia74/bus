@@ -20,16 +20,15 @@ hotelAdminSchema.statics.authenticate= function(username,password,cb){
             cb({status:false,error:'incorrect password'})
         }
     })
-}
+};
 
-hotelAdminSchema.statics.addAdmin = function(username,password,hotelName){
-mongoose.model('hotel').findOne({name:hotelName},{_id:1},function(err,hotelId){
-    if(err) throw err;
-    mongoose.model('hotelAdmins').create({username},function(err,AdminCreated){
+hotelAdminSchema.statics.addAdmin = function(username,password,hotelId,cb){
+    mongoose.model('hotelAdmins').create({username,password,hotelId},function(err,AdminCreated){
+        console.log(AdminCreated,'sdds')
         if(err) throw err;
+        cb(AdminCreated)
     })
-})
-}
+    }
 
 hotelAdminSchema.statics._=  function (hotelId,cb){
     mongoose.model('hotel').aggregate(

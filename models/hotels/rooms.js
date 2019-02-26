@@ -47,20 +47,17 @@ RoomSchema.statics.createRooms = function(hotelId,roomCapacity,noOfRooms,cb){
     const roomType = availableRoomType[roomCapacity-1];
         console.log(noOfRooms,"noofrooms")
          return  this.insertMany(
-             roomhelphers.createArrOfRange(roomCapacity,noOfRooms),
+             roomhelphers.createArrOfRange(roomCapacity,noOfRooms,hotelId),
              function(err,roomList){
                 if(err) throw err;
                 console.log(roomList,'jj')
-                let roomIds=roomList.map((room)=> 
-                        room._id);
-                console.log(roomIds,'console')
 
          mongoose.model("hotel").updateOne({
              _id:hotelId
             },
             {
                 $addToSet:{
-                    [`${roomType}`]:roomIds
+                    [`${roomType}`]:roomList.map((room)=> room._id)
                 } 
             },
                 function(err,result){

@@ -18,21 +18,23 @@ console.log(path.join(__dirname, '/views/appAdminBoard',))
 
 
   
-/* app.set('views', path.join(__dirname, '/views/appAdminBoard/')) */
-app.set('views',path.join(__dirname,'/views/appAdminBoard/')) 
+
+/* app.set('views',path.join(__dirname,'/views/appAdminBoard/')) 
+app.use(express.static(__dirname+'/views/appAdminBoard/')); */
+ app.use(express.static(__dirname+'/views/hotelBoard/images')); 
+
+app.use(express.static(__dirname+'/views/hotelBoard/'));
+app.set('views',path.join(__dirname,'/views/hotelClient/'))
 app.set('view engine','ejs');
 app.use(express.json());
-app.use(bodyParser.json())
-app.use(cookieParser())
+app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/saveLocation',createLocation);
 app.use('/createBus',createBus);
 app.use('/hotel',hotel);
-app.use('/_hotel',_hotel)
+app.use('/_hotel',_hotel);
 app.use('/_admin',admin);
-app.use(express.static(__dirname+'/views/appAdminBoard/'))
-app.use(express.static(__dirname+'/views/appAdminBoard/images'))
-app.get('/save',(req,res)=>res.render('createHotel',{noOfHotels:6}))
 
 
 

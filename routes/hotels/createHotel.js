@@ -19,14 +19,39 @@ const  {Save}= require("../../models/save")
                 // required fields
                 /* search name 
                     search type : [hotel or zone]
+
                 */ 
+
+Route.get('/clientBooking',(req,res)=>{
+    res.render('bookingClient')
+});  
+Route.get('/status',(req,res)=>{
+    console.log(req.body,'hhh',req.query)
+    const {searchType,searchName} = req.query;
+    console.log(searchType,searchName,'jdjk')
+    if(searchType==="hotel"){
+        Hotel.find({},{name:1},function(err,hotelList){
+            if(err) throw err;
+            console.log(hotelList,'hotelList')
+            res.send(hotelList)
+        })
+    }else if(searchType==="zone"){
+        Zones.find({},{zoneName:1},function(err,zoneList){
+            if(err) throw err;
+            console.log(zoneList,'zoneList')
+            res.send(zoneList)
+        })
+    }
+})
+
 Route.post("/search",(req,res)=>{
     const {searchName,searchType,checkIn ,checkOut,roomType,noOfPerson } = req.body;
-    Hotel.findHotel(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(seachList){
-        console.log(seachList)
-        res.send(seachList)
+    console.log(req.body,'hhh')
+    Hotel.findHotel(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(searchList){
+        console.log(searchList,'jjjj')
+        res.send(searchList)
     })
-});
+})
 
 
 Route.post("/bookRoom",(req,res)=>{
@@ -39,6 +64,17 @@ Route.post("/bookRoom",(req,res)=>{
         }); 
     }) 
 });
+
+Route.post("/login",(req,res)=>{
+   const {username,password} = req.body;
+
+
+})
+
+Route.post('/signup',(req,res)=>{
+    const {name,username,password,confirm} = req.body;
+
+})
 
 
 

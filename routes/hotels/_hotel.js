@@ -5,9 +5,10 @@ const Route = express.Router();
 const mongoose = require("mongoose");
 
 // imports 
- let {Hotel} = require('../../models/hotels/hotel');
- let {Books} = require('../../models/hotels/booking');
- let {HotelAdmins} = require('../../models/hotels/hotelAdmin')
+ const {Hotel} = require('../../models/hotels/hotel');
+ const {Books} = require('../../models/hotels/booking');
+ const {HotelAdmins} = require('../../models/hotels/hotelAdmin');
+ const {Rooms} = require('../../models/hotels/rooms');
  
 
     /* login hotel dashboard */
@@ -17,7 +18,7 @@ Route.get('/login',(req,res)=>{
     console.log(req.body)
    res.render('login',{hotelId:null})
    console.log(req.cookies)
-})
+});
     /*checking valid user*/
     
     // required field : username ,password
@@ -39,17 +40,13 @@ Route.post('/_',(req,res)=>{
 
 })
 
-  /*displaying booking list   */
-    //required field: hotelId 
-
+ 
 Route.get('/bookings',(req,res)=>{
     Books.booking(req.cookies.id,function(bookingList){
         console.log(bookingList,'hgh')
         res.render('booking',{bookingList})
     })
 })
-
-
 
 
 
@@ -92,9 +89,48 @@ Route.get('/logout',(req,res)=>{
 res.clearCookie('id');
 res.redirect('login');
 })
+
+Route.get('/createRooms',(req,res)=>{
+    res.render('createRooms')
+})
+.post('/createRooms',(req,res)=>{
+    const {roomType,noOfRooms} = req.body;
+    const {id} = req.cookies;
+    console.log(id,roomType,noOfRooms,req.body,'hhh')
+     Rooms.createRooms(id,roomType,noOfRooms,function(data){
+       res.redirect('rooms')
+    }) 
+})
+
+Route.get('/rooms',(req,res)=>{
+   Hotel.aggregate([
+       {
+           $match:{
+               _id:mongoose.Types.ObjectId(req.cookies.id)
+            }
+        },
+        { $project:{
+            singleRoom:{$size:"$singleRooms"},
+            doubleRoom:{$size:"$doubleRooms"},
+            tripleRoom:{$size:"$tripleRooms"},
+            fourPeopleRoom:{$size:"$fourPeopleRoom"}
+        }
+            
+        }
+    ],function(err,hotelData){
+        if(err) throw err;
+        console.log(hotelData,'jhjhh')
+        res.render('rooms',{hotelData:hotelData[0]})
+    }) 
+
+})
+
+
+Route.get('/delete',(req,res)=>{
+    Rooms.deleteMany({checkIn:null},function(err,raw){
+        if(err) throw err;
+        res.send(raw)
+    })
+})
 module.exports = Route
 
-/* 
-    bookings singleRooms doubleRooms tripleRooms fourpeopleRooms
- 
-*/

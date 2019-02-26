@@ -35,13 +35,13 @@ address:{
     type:String
 },
 
-booking:[{
-   id:{type:mongoose.Schema.Types.ObjectId },
-   roomType:{type:String},
-   bookingId:{type:mongoose.Schema.Types.ObjectId},
-   chekIn:{type:Date},
-   checkOut:{type:Date}
-}],
+booking:{
+    singleRooms:[{_id:mongoose.Types.ObjectId,checkIn: Date,checkOut: Date}],
+    doubleRooms:[{_id:mongoose.Types.ObjectId,checkIn:  Date,checkOut: Date}],
+    tripleRooms:[{_id:mongoose.Types.ObjectId,checkIn:Date,checkOut:Date}],
+    fourPeopleRoom:[{_id:mongoose.Types.ObjectId,checkIn:Date,checkOut:Date}]
+
+},
 
 amenities:{
     type:String,
@@ -54,15 +54,15 @@ roomAvailable:{
 
 price:{
 
-    singleRoom:{
+    singleRooms:{
         type:Number
     },
 
-    doubleRoom:{
+    doubleRooms:{
         type:Number
     },
 
-    tripleRoom:{
+    tripleRooms:{
         type:Number
     },
 
@@ -74,8 +74,7 @@ price:{
     singleRooms:[
         {
               type:mongoose.Schema.Types.ObjectId
-        }
-        
+        }    
     ],
     
     doubleRooms:[],
@@ -87,8 +86,7 @@ price:{
         ref:'room'
     }],
     
-    bookedRooms:[]
-,
+   
 
 });
 
@@ -140,16 +138,14 @@ hotelSchema.statics.search = function(point1,point2,point3,point4,point5,cb){
         name:1
     }
 },
+
 {
-    "$unwind":"$booking"
-},
-{
-    "$lookup":{
-    "from":"books",
-    localField:"booking",
-    foreignField:"_id",
-    as:"bookingsDone"
-}}],
+    $project:{
+        searchList:1
+        
+    }
+}
+],
     function(err,places){
         if (err) throw err;
         console.log(places)
@@ -159,25 +155,64 @@ hotelSchema.statics.search = function(point1,point2,point3,point4,point5,cb){
 
 
 hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,cb){
+   
     mongoose.model('zone').aggregate([
-        {
-        $match:{
-                zoneName:searchName
-            }
+            { 
+                $match:{
+                    zoneName:searchName
+                }
+            },
+            {
+                $lookup:{
+                    from:'hotels',
+                    localField:'hotelList',
+                    foreignField:'_id',
+                    as:"searchList"
+                }
+            },
+            {
+                $project:{
+                    searchList:1,
+                    _id:0
+                }
+            },
+            {
+             "$unwind":"$searchList"   
+            },
+            {
+                $project:{
+                    "searchList.name":1,
+                        "searchList._id":1,
+                    /* [`searchList.booking.${roomType}`]:1,
+                    [`searchList.${roomType}`]:1, */
+                    "searchList.image":1,
+                    bookingList:{
+                        $size:`$searchList.booking.${roomType}`
+                    },
+                    roomList:{
+                        $size:`$searchList.${roomType}`
+                    }
+                }   
+            },
+            {
+                $project:{
+                    searchList:1,
+                    /* bookingList:1,
+                    roomList:1, */
+                    available:{$subtract:["$roomList","$bookingList"]}
+                }
+            },
+            {$sort:{available:-1}}
+            
            
-        },
-     {
-    $lookup:{
-        from:'hotels',
-        localField:'hotelList',
-        foreignField:'_id',
-        as:"searchList"
-    }
-} ,{$project:{"searchList":1}}
-],function(err,data){
-    if(err) throw err;
-  cb(data)
+                  
+    ],function(err,data){
+        if(err) throw err;
+        cb(data)
+    })    
     
+}
+        
     /* if(data.length<=0){
         mongoose.model('hotel').find({name:searchName},function(err,searchHotelList){
             if(err) throw err;
@@ -187,8 +222,7 @@ hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOu
     }else{
         cb(data)
     } */
-}) 
-}
+ 
 
 hotelSchema.statics._hotel = function(hotelId){
     this.aggregate([
@@ -214,9 +248,10 @@ hotelSchema.statics.hotelList = function  (cb){
 /* hotelSchema.statics.count=function(){
    return this.count()
 } */
+
 hotelSchema.statics.index = function(cb){
     let callbackObj = {};
-this.count(function(err,hotelCount){
+    this.count(function(err,hotelCount){
     if(err) throw err;
     callbackObj.hotelCount=hotelCount;
   mongoose.model('zone').countDocuments(function(err,zoneCount){
@@ -227,19 +262,19 @@ this.count(function(err,hotelCount){
        callbackObj.bookingCount = bookingCount;
     mongoose.model('coupons').countDocuments(function(err,couponCount){
         callbackObj.couponCount= couponCount;
+        if(err) throw err;
         cb(callbackObj)
-    })   
+        })   
      
-   })   
-      
-  })  
+    })   
+      })  
 })
 }
-hotelSchema.statics.createHotel = function(name,address,long,lat,singleRooms,doubleRooms,zoneName,cb){
 
+
+hotelSchema.statics.createHotel = function(name,address,long,lat,singleRooms,doubleRooms,zoneName,cb){
     this.create({name,address,"location.coordinates":[long,lat]},function(err,hotelDetails){
         if(err) throw err
-      
         else{
                 if(singleRooms>0){
                     mongoose.model('room').insertMany( roomhelphers.createArrOfRange(1,singleRooms,hotelDetails._id),function(err,singleRoomDetail){
@@ -248,9 +283,7 @@ hotelSchema.statics.createHotel = function(name,address,long,lat,singleRooms,dou
                             if(err) throw err;
                             console.log(raw)
                         })
-
                     })
-                   
                 }
                 if(doubleRooms>0){
                     mongoose.model('room').insertMany( roomhelphers.createArrOfRange(2,doubleRooms,hotelDetails._id),function(err,doubleRoomDetail){
@@ -259,22 +292,18 @@ hotelSchema.statics.createHotel = function(name,address,long,lat,singleRooms,dou
                             if(err) throw err;
                             console.log(raw)
                         })
-
                     })
                 }
                 mongoose.model('zone').updateOne({zoneName},{$addToSet:{hotelList:mongoose.Types.ObjectId(hotelDetails._id)}},function(err,raw){
                     if(err) throw err;
                     console.log(raw)
                 })
-
-            mongoose.model('hotel').find({},{name:1},function(err,hotelList){
-                if(err) throw err;
-                cb(hotelList)
+                mongoose.model('hotel').find({},{name:1},function(err,hotelList){
+                    if(err) throw err;
+                    cb(hotelList)
             })
-               
         }
     })
-    
 }
 
 
@@ -282,13 +311,5 @@ hotelSchema.statics.createHotel = function(name,address,long,lat,singleRooms,dou
 hotelSchema.index({location:"2dsphere"})
 
 const Hotel  = mongoose.model('hotel',hotelSchema);
+
 module.exports={Hotel};
-
-/* 
-
-search collection : {id,
-                        name,
-                    type
-                }
-
-*/
