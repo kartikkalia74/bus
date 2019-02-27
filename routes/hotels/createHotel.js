@@ -46,11 +46,21 @@ Route.get('/status',(req,res)=>{
 
 Route.post("/search",(req,res)=>{
     const {searchName,searchType,checkIn ,checkOut,roomType,noOfPerson } = req.body;
-    console.log(req.body,'hhh')
-    Hotel.findHotel(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(searchList){
-        console.log(searchList,'jjjj')
-        res.send(searchList)
-    })
+
+    if(searchType==="zone"){
+        Hotel.findHotelInZone(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(searchList){
+            console.log(searchList,'jjjj')
+            res.send(searchList)
+        });
+    }else if(searchType==="hotel"){
+        Hotel.findHotel(searchName,roomType,function(hotelDetails){
+            res.send(hotelDetails)
+        })
+    }
+    
+
+
+
 })
 
 

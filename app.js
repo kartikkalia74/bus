@@ -19,12 +19,14 @@ console.log(path.join(__dirname, '/views/appAdminBoard',))
 
   
 
-/* app.set('views',path.join(__dirname,'/views/appAdminBoard/')) 
-app.use(express.static(__dirname+'/views/appAdminBoard/')); */
+app.set('views',path.join(__dirname,'/views/appAdminBoard/')) 
+app.use(express.static(__dirname+'/views/appAdminBoard/'));
+/*
+ app.use(express.static(__dirname+'/views/hotelBoard/images')); 
  app.use(express.static(__dirname+'/views/hotelBoard/images')); 
 
 app.use(express.static(__dirname+'/views/hotelBoard/'));
-app.set('views',path.join(__dirname,'/views/hotelClient/'))
+app.set('views',path.join(__dirname,'/views/hotelClient/')) */
 app.set('view engine','ejs');
 app.use(express.json());
 app.use(bodyParser.json());

@@ -154,7 +154,7 @@ hotelSchema.statics.search = function(point1,point2,point3,point4,point5,cb){
 }
 
 
-hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,cb){
+hotelSchema.statics.findHotelInZone = function (searchName,checkIn ,checkOut,roomType,noOfPerson,cb){
    
     mongoose.model('zone').aggregate([
             { 
@@ -186,6 +186,7 @@ hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOu
                     /* [`searchList.booking.${roomType}`]:1,
                     [`searchList.${roomType}`]:1, */
                     "searchList.image":1,
+                   price: `$searchList.price.${roomType}`,
                     bookingList:{
                         $size:`$searchList.booking.${roomType}`
                     },
@@ -197,13 +198,13 @@ hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOu
             {
                 $project:{
                     searchList:1,
+                    price:1,
                     /* bookingList:1,
                     roomList:1, */
                     available:{$subtract:["$roomList","$bookingList"]}
                 }
             },
             {$sort:{available:-1}}
-            
            
                   
     ],function(err,data){
@@ -222,7 +223,28 @@ hotelSchema.statics.findHotel = function (searchName,searchType,checkIn ,checkOu
     }else{
         cb(data)
     } */
- 
+ hotelSchema.statics.findHotel= function(searchName,roomType,cb){
+    this.aggregate([
+        {
+            $match:{
+                name:searchName
+            }
+        },
+        {
+            $project:{
+                _id:1,
+                name:1,
+                price:`$price.${roomType}`,
+                image:1,
+                available:{$subtract:[{$size:`$${roomType}`},{$size:`$booking.${roomType}`}]}
+
+            }
+        }
+    ],function(err,hotelDetail){
+        if(err) throw err;
+        cb(hotelDetail)
+    })
+ }
 
 hotelSchema.statics._hotel = function(hotelId){
     this.aggregate([
