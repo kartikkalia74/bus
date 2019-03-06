@@ -1,0 +1,4 @@
+{
+    "host":"http:localhost:5002/",
+    "dbUri":"mongodb://ank:ank123@ds259144.mlab.com:59144/login"
+}

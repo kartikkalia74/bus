@@ -7,24 +7,14 @@ const {Hotel} = require("../../models/hotels/hotel");
 const {Rooms}= require("../../models/hotels/rooms");
 const {Books} = require("../../models/hotels/booking");
 const {Zones} = require("../../models/ZONES/zone");
-const  {Save}= require("../../models/save")
-
-
-
-
-        /*searching for available hotel in zone with zone name    */
-                /* or */
-        /* searching for hotel with hotel name */
-
-                // required fields
-                /* search name 
-                    search type : [hotel or zone]
-
-                */ 
+const  {Save}= require("../../models/save");
+const payment = require("../../helphers/stripe");
+const {User} = require("../../models/hotels/user");
 
 Route.get('/clientBooking',(req,res)=>{
     res.render('bookingClient')
 });  
+
 Route.get('/status',(req,res)=>{
     console.log(req.body,'hhh',req.query)
     const {searchType,searchName} = req.query;
@@ -48,8 +38,7 @@ Route.post("/search",(req,res)=>{
     const {searchName,searchType,checkIn ,checkOut,roomType,noOfPerson } = req.body;
 
     if(searchType==="zone"){
-        Hotel.findHotelInZone(searchName,searchType,checkIn ,checkOut,roomType,noOfPerson,function(searchList){
-            console.log(searchList,'jjjj')
+        Hotel.findHotelInZone(searchName.trim(''),checkIn ,checkOut,roomType,noOfPerson,function(searchList){
             res.send(searchList)
         });
     }else if(searchType==="hotel"){
@@ -57,12 +46,26 @@ Route.post("/search",(req,res)=>{
             res.send(hotelDetails)
         })
     }
-    
+});
 
-
-
+Route.post("/checkOut",(req,res)=>{
+    const {roomType,hotelId,checkIn,checkOut,noOfRooms,booking} = req.body;
+    /* Hotel.checkOut(hotelId,roomType,checkIn,checkOut,noOfRooms,function(checkOut){
+        res.send(checkOut)
+    }) */
+    Hotel.testCheckOut(hotelId,checkIn,checkOut,noOfRooms,booking,function(checkout){
+        res.send(checkout)
+    })
 })
 
+Route.post("/payment",(req,res)=>{
+   let {customerId,sourceId,amount,currency,bookingId} = req.body;
+   console.log(req.body)
+   payment.charge(sourceId,amount,currency='usd',customerId,function(paymentDetails){
+       res.send(paymentDetails)
+
+   })
+})
 
 Route.post("/bookRoom",(req,res)=>{
     const {name,username,phone,roomType,checkIn,checkOut,noOfRooms,noOfPersons,hotelId} = req.body;
@@ -74,6 +77,13 @@ Route.post("/bookRoom",(req,res)=>{
         }); 
     }) 
 });
+
+Route.post("/user",(req,res)=>{
+    const {name,username,phone,email} = req.body;
+    User.createUser(name,email,phone,function(userData){
+        res.send(userData)
+    }) 
+})
 
 Route.post("/login",(req,res)=>{
    const {username,password} = req.body;
@@ -88,22 +98,7 @@ Route.post('/signup',(req,res)=>{
 
 
 
-/* {
-   "_id" : 1,
-   "grades" : [
-      { "grade" : 80, "mean" : 75, "std" : 6 },
-      { "grade" : 85, "mean" : 100, "std" : 4 },
-      { "grade" : 85, "mean" : 100, "std" : 6 }
-   ]
-}
-{
-   "_id" : 2,
-   "grades" : [
-      { "grade" : 90, "mean" : 100, "std" : 6 },
-      { "grade" : 87, "mean" : 100, "std" : 3 },
-      { "grade" : 85, "mean" : 100, "std" : 4 }
-   ]
-} */
+
 
 module.exports=Route;
 

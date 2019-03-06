@@ -16,7 +16,7 @@ const mongoose = require("mongoose");
 
 Route.get('/login',(req,res)=>{
     console.log(req.body)
-   res.render('login',{hotelId:null})
+   res.render('hotelBoard/login',{hotelId:null})
    console.log(req.cookies)
 });
     /*checking valid user*/
@@ -25,18 +25,18 @@ Route.get('/login',(req,res)=>{
 Route.post('/_',(req,res)=>{
     const {username,password} = req.body;
 
- HotelAdmins.authenticate(username,password,function(hotelId){
-   console.log(hotelId)
-   if(hotelId.status===true){
-       HotelAdmins._(hotelId.hotelId,function(hotelDetail){
-           res.cookie('id',hotelId.hotelId)
-        res.render('_hotel',{hotelDetail:hotelDetail})
-       })
-       
-   }else{
-       res.render('login',{hotelId})
-   }
- })
+    HotelAdmins.authenticate(username,password,function(hotelId){
+    console.log(hotelId)
+    if(hotelId.status===true){
+        HotelAdmins._(hotelId.hotelId,function(hotelDetail){
+            res.cookie('id',hotelId.hotelId)
+            res.render('hotelBoard/_hotel',{hotelDetail:hotelDetail})
+        })
+        
+    }else{
+        res.render('hotelBoard/login',{hotelId})
+    }
+    })
 
 })
 
@@ -44,14 +44,14 @@ Route.post('/_',(req,res)=>{
 Route.get('/bookings',(req,res)=>{
     Books.booking(req.cookies.id,function(bookingList){
         console.log(bookingList,'hgh')
-        res.render('booking',{bookingList})
+        res.render('hotelBoard/booking',{bookingList})
     })
 })
 
 
 
 Route.get('/updatePrice',(req,res)=>{
-    res.render('updatePrice')
+    res.render('hotelBoard/updatePrice')
 })
 
 
@@ -59,7 +59,7 @@ Route.post('/updatePrice',(req,res)=>{
          const {price,roomType} = req.body;
         console.log(req.body,req.cookies)
     Hotel.updatePrice(hotelId=req.cookies.id,price,roomType,function(raw){
-       res.redirect('price')
+       res.redirect('hotelBoard/price')
     })  
 })
 
@@ -67,7 +67,7 @@ Route.get('/checkOut/:Id',(req,res)=>{
    console.log(req.params.Id)
  Books.checkOut(bookingId=req.params.Id,function(raw){
      console.log(raw,'hjsj')
-     res.redirect('bookings')
+     res.redirect('/_hotel/bookings')
  }) 
 })
 
@@ -81,7 +81,7 @@ Route.get("/booking",(req,res)=>{
 Route.get('/price',async(req,res)=>{
 let data = await Hotel.findOne({_id:mongoose.Types.ObjectId(req.cookies.id)})
     console.log(data.price.singleRoom);
-    res.render('price',{data});
+    res.render('hotelBoard/price',{data});
 })
 
 Route.get('/logout',(req,res)=>{
@@ -91,7 +91,7 @@ res.redirect('login');
 })
 
 Route.get('/createRooms',(req,res)=>{
-    res.render('createRooms')
+    res.render('hotelBoard/createRooms')
 })
 .post('/createRooms',(req,res)=>{
     const {roomType,noOfRooms} = req.body;
@@ -120,7 +120,7 @@ Route.get('/rooms',(req,res)=>{
     ],function(err,hotelData){
         if(err) throw err;
         console.log(hotelData,'jhjhh')
-        res.render('rooms',{hotelData:hotelData[0]})
+        res.render('hotelBoard/rooms',{hotelData:hotelData[0]})
     }) 
 
 })

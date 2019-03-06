@@ -26,7 +26,7 @@ Route.post("/zone",(req,res)=>{
 
 
 Route.get("/createZone",(req,res)=>{
-    res.render('createZone')
+    res.render('appAdminBoard/createZone')
 }).post('/createZone',(req,res)=>{
    let {zoneName,coord1,coord2,coord3,coord4,coord5} =req.body
     console.log(req.body,'dfghj');
@@ -83,7 +83,7 @@ Route.get('/zone/:zoneName',(req,res)=>{
            console.log(data,'ghjh')
           let {name,address} = data[0].hotelDetail
           let {singleRooms,doubleRooms,tripleRooms} = data[0]
-           res.render('hotelDetail',{name,address,singleRooms,doubleRooms,tripleRooms})
+           res.render('appAdminBoard/hotelDetail',{name,address,singleRooms,doubleRooms,tripleRooms})
        })
 
     }else if(zoneName&&!hotel){
@@ -105,7 +105,7 @@ Route.get('/zone/:zoneName',(req,res)=>{
          }],(err,zoneDetails)=>{
          if(err) throw err;
          console.log(zoneDetails,'jkjjk')
-         res.render('zoneHotels',{hotelList:zoneDetails[0].hotelList})
+         res.render('appAdminBoard/zoneHotels',{hotelList:zoneDetails[0].hotelList})
          
         })
     }
@@ -118,7 +118,7 @@ Route.get('/zone/:zoneName',(req,res)=>{
 Route.get('/zone',(req,res)=>{
     Zones.find({},{zoneName:1},function(err,zoneList){
         if(err) throw err;
-       res.render('zones',{zoneList})
+       res.render('appAdminBoard/zones',{zoneList})
 
     })
 })
@@ -126,7 +126,7 @@ Route.get('/zone',(req,res)=>{
 Route.get('/dashboard',(req,res)=>{
     Hotel.index(function(indexObj){
         console.log(indexObj,'ggggg')
-        res.render('index',{indexObj})
+        res.render('appAdminBoard/index',{indexObj})
     })
   console.log(req.body,'gh')
 
@@ -137,7 +137,7 @@ Route.get('/createHotel',(req,res)=>{
     Zones.find({},{zoneName:1},function(err,zoneList){
         if(err) throw err;
         console.log(zoneList,'zoneList')
-        return res.render('createHotel',{zoneList})
+        return res.render('appAdminBoard/createHotel',{zoneList})
     })
   
 }).post('/createHotel',(req,res)=>{
@@ -146,7 +146,7 @@ Route.get('/createHotel',(req,res)=>{
 
      Hotel.createHotel(name,address,long,lat,singleRooms,doubleRooms,zoneName,function(hotelList){
         console.log(hotelList,'fghjkj')
-        res.render('hotelList',{hotelList})
+        res.render('appAdminBoard/hotelList',{hotelList})
     }) 
 })
 
@@ -154,12 +154,12 @@ Route.get('/hotelList',(req,res)=>{
     Hotel.find({},{name:1},function(err,hotelList){
         if(err) throw err;
         console.log(hotelList,'ghjk')
-        res.render('hotelList',{hotelList})
+        res.render('appAdminBoard/hotelList',{hotelList})
     })
 })
 
 Route.get('/createAdmin',(req,res)=>{
-    res.render('createAdmin')
+    res.render('appAdminBoard/createAdmin')
 })
 .post('/createAdmin',(req,res)=>{
     const {username,password,hotelId} = req.body;
@@ -204,7 +204,7 @@ Route.get('/coupon/:code',(req,res)=>{
 
 })
 Route.get('/createCoupon',(req,res)=>{
-    res.render('createCoupon')
+    res.render('appAdminBoard/createCoupon')
 })
 
 
@@ -212,7 +212,7 @@ Route.get('/coupon',(req,res)=>{
     Coupons.find({},function(err,couponsList){
         if(err) throw err;
         console.log(couponsList.length)
-       res.render('coupons',{couponsList})
+       res.render('appAdminBoard/coupons',{couponsList})
     })
 })
 

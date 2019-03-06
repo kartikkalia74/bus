@@ -108,9 +108,9 @@ BookSchema.statics.bookRoom = function (name, username, phone, roomType, checkIn
                         name,
                         username,
                         phone,
-                        checkIn,
+                        checkIn :Date(checkIn),
                         Rooms: bookingRoomIds,
-                        checkOut,
+                        checkOut:Date(checkOut),
                         hotelId,
                         noOfPersons
                     }, function (err, bookingDetails) {
@@ -129,7 +129,7 @@ BookSchema.statics.bookRoom = function (name, username, phone, roomType, checkIn
                             }
                         },function(err,raw){
                             if(err) throw err;
-                            cb(raw)
+                            cb(bookingDetails)
                         })
                         
                     })
@@ -177,9 +177,9 @@ BookSchema.statics.bookRoom = function (name, username, phone, roomType, checkIn
                             name,
                             username,
                             phone,
-                            checkIn,
+                            checkIn:Date(checkIn),
                             Rooms: toBookRoomIds,
-                            checkOut,
+                            checkOut:Date(checkOut),
                             hotelId,
                             noOfPersons
                         }, function (err, BookingData) {
